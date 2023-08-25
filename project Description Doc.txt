@@ -1,0 +1,90 @@
+
+===============================
+
+Project- Final : 
+
+
+1. Launch an ec2 instance (Launch Amazon Linux 2)
+2. Launch rds cluster 
+3. Configure ec2 instance to connect to rds
+
+
+yum install httpd -y
+service httpd start
+chkconfig httpd on
+
+
+Install mysql client
+
+==> sudo yum install -y mysql
+
+Export mysql endpoint with below command.
+export MYSQL_HOST=<your-endpoint>
+
+export MYSQL_HOST=proddb.cfpgnjehw330.ap-south-1.rds.amazonaws.com
+
+--
+Connect to mysql to create a db user
+
+mysql -h proddb.cfpgnjehw330.ap-south-1.rds.amazonaws.com -P 3306 -u admin -p
+
+--
+
+CREATE DATABASE mywebapp;
+
+CREATE TABLE mywebapp.customers (
+    id INT(11) NOT NULL AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL,
+    email VARCHAR(50) NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE USER 'webappuser' IDENTIFIED BY 'Avinash1234';
+GRANT ALL PRIVILEGES ON mywebapp.* TO webappuser;
+FLUSH PRIVILEGES;
+Exit
+
+--
+Install required dependencies:
+
+sudo amazon-linux-extras install -y lamp-mariadb10.2-php7.2 php7.2
+
+service httpd restart
+--
+
+cd /var/www/html/
+
+"vim info.php" and write below code/command to "info.php" file, save and close
+
+<?php phpinfo(); ?>
+
+Connect to JUMP Server, Open browser and enter "INSTANCE-PRIVATE-IP/info.php", this should display all php config information.
+
+--
+
+Now create an "index.html" below shared file/ below code.
+
+Refer the shared "index.html" and copy content and paste it here. 
+
+
+----
+
+Also, create another file name "submit.php" and paste the below content.
+
+Refer the shared "index.html" and copy content and paste it here. 
+
+** Replace 'rds-hostname', 'username', 'password', 'database'.
+
+---------
+
+Create a Load Balancer in Custom VPC public Subnet, Add EC2 instance to Load balancer target group, and deliver the webpage.
+----------
+
+Now access http://<loadbalancer-dns-name>/, Fill the required information and submit. Data should store in mysql mywebapp.customer database.
+
+connect to rds cluster and execute below sql query to view all information you submitted from the webpage you created.
+
+SELECT * from mywebapp.customers;
+
+
